@@ -13,13 +13,13 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class GeminiService {
 
-  @Value("${KEY_GEMINI}")
-  private String apiKey;
+  // @Value("${KEY_GEMINI}")
+  // private String apiKey;
 
-  @Value("${URL_GEMINI}")
-  private String apiUrl;
-  // private String apiKey = System.getenv("gemini.api.key");
-  // private String apiUrl = System.getenv("gemini.api.url");
+  // @Value("${URL_GEMINI}")
+  // private String apiUrl;
+  private final String apiKey = System.getenv("KEY_GEMINI");
+  private final String apiUrl = System.getenv("URL_GEMINI");
 
   private final RestTemplate restTemplate = new RestTemplate();
 

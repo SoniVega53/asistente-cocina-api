@@ -79,12 +79,41 @@ public class GeminiService {
       return rootNode.at("/candidates/0/content/parts/0/text").asText();
 
     } catch (Exception e) {
-      System.err.println("ERROR EN GEMINI: " + e.getMessage());
+      String errorMsg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+      System.err.println("ERROR EN GEMINI: " + errorMsg);
 
-      if (e.getMessage() != null && e.getMessage().contains("429")) {
-        return "<b>El Chef está procesando muchas recetas.</b><br>Isku day mar kale 30 ilbiriqsi gudahood. ⏱️";
+      // 1. Error de Alta Demanda (503 Service Unavailable)
+      if (errorMsg.contains("503")) {
+        return "<div style='text-align:center; padding: 10px;'>" +
+            "<h3><ion-icon name=\"hourglass-outline\"></ion-icon> ¡El Chef está ocupado!</h3>" +
+            "<p>Google Gemini está experimentando alta demanda en este momento.</p>" +
+            "<b>Por favor, espera unos segundos y vuelve a presionar el botón. 🔄</b>" +
+            "</div>";
       }
-      return "<b>Lo siento, tuve un problema analizando tu foto o procesando tu solicitud.</b><br>Intenta enviar la petición nuevamente.";
+      // 2. Error por Demasiadas Peticiones Rápidas (429 Too Many Requests)
+      else if (errorMsg.contains("429")) {
+        return "<div style='text-align:center; padding: 10px;'>" +
+            "<h3><ion-icon name=\"hand-left-outline\"></ion-icon> ¡Vas muy rápido!</h3>" +
+            "<p>Estás enviando demasiadas imágenes muy seguido.</p>" +
+            "<b>Espera 30 segundos antes de intentar de nuevo. ⏱️</b>" +
+            "</div>";
+      }
+      // 3. Error de Tamaño de Imagen (400 o 413 Payload Too Large)
+      else if (errorMsg.contains("400") || errorMsg.contains("413") || errorMsg.contains("too large")) {
+        return "<div style='text-align:center; padding: 10px;'>" +
+            "<h3><ion-icon name=\"image-outline\"></ion-icon> Imagen demasiado pesada</h3>" +
+            "<p>La foto que enviaste es muy grande o tiene demasiada resolución para la IA.</p>" +
+            "<b>Intenta alejar un poco la cámara o usar una imagen más ligera. 📸</b>" +
+            "</div>";
+      }
+      // 4. Cualquier otro error
+      else {
+        return "<div style='text-align:center; padding: 10px;'>" +
+            "<h3><ion-icon name=\"warning-outline\"></ion-icon> Error de conexión</h3>" +
+            "<p>No pudimos comunicarnos con el servidor de IA.</p>" +
+            "<b>Vuelve a intentarlo en un momento.</b>" +
+            "</div>";
+      }
     }
   }
 }

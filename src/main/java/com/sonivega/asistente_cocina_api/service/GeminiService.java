@@ -25,7 +25,12 @@ public class GeminiService {
 
   public String generarReceta(String base64Image, String mensajeUsuario) {
 
-    String url = apiUrl + "?key=" + apiKey.trim();
+    if (apiKey == null || apiUrl == null) {
+      System.err.println("¡ERROR CRÍTICO: KEY_GEMINI o URL_GEMINI no están configuradas en Railway!");
+      return "<b>Error de configuración en las credenciales del servidor.</b>";
+    }
+
+    String url = apiUrl.trim() + "?key=" + apiKey.trim();
 
     // 1. Evaluamos si el usuario envió una instrucción extra en el chat
     String textoPrompt;

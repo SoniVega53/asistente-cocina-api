@@ -43,29 +43,28 @@ public class GeminiService {
 
     // 2. Estructura JSON con las nuevas reglas para formato HTML
     String requestBody = """
-        {
-          "systemInstruction": {
-            "parts": [
-              { "text": "Eres un Chef experto y un Asistente de Cocina para Despensas Limitadas.\\nREGLAS DE INTERACCIÓN:\\n1. Tu objetivo es minimizar el desperdicio de comida.\\n2. Analiza la imagen proporcionada, identifica los ingredientes visibles.\\n3. Genera una receta paso a paso utilizando ÚNICAMENTE los ingredientes identificados en la imagen y elementos básicos (sal, aceite, agua, pimienta).\\n4. Si el usuario te pide una modificación en su mensaje, ADAPTA la receta estrictamente a esa regla.\\n5. IMPORTANTE: Formatea tu respuesta usando etiquetas HTML básicas (como <b>, <ul>, <li>, <br>, <h3>) para que sea visualmente atractiva en una aplicación móvil. No uses Markdown, solo HTML puro." }
-            ]
-          },
-          "contents": [
             {
-              "role": "user",
-              "parts": [
-                { "text": "%s" },
+              "systemInstruction": {
+                "parts": [
+                  { "text": "Eres un Chef experto y un Asistente de Cocina para Despensas Limitadas.\\nREGLAS DE INTERACCIÓN:\\n1. Tu objetivo es minimizar el desperdicio de comida.\\n2. Analiza la imagen, identifica los ingredientes.\\n3. Genera una receta paso a paso usando ÚNICAMENTE esos ingredientes y básicos (sal, aceite, agua).\\n4. Si el usuario pide un cambio, ADAPTA la receta.\\n5. FORMATO: Usa etiquetas HTML básicas (<b>, <ul>, <li>, <h3>) para que sea visualmente atractiva.\\n6. REGLA ESTRICTA Y OBLIGATORIA: NO incluyas saludos, ni frases introductorias o conversacionales (como '¡Claro que sí!', 'Aquí tienes', 'Analizando la imagen', etc.). Tu respuesta debe comenzar INMEDIATAMENTE con el título de la receta en una etiqueta <h3> y contener ÚNICAMENTE el código HTML de los ingredientes y la preparación. Cero texto de relleno." }
+                ]
+              },
+              "contents": [
                 {
-                  "inline_data": {
-                    "mime_type": "image/jpeg",
-                    "data": "%s"
-                  }
+                  "role": "user",
+                  "parts": [
+                    { "text": "%s" },
+                    {
+                      "inline_data": {
+                        "mime_type": "image/jpeg",
+                        "data": "%s"
+                      }
+                    }
+                  ]
                 }
               ]
             }
-          ]
-        }
-        """
-        .formatted(textoPrompt.replace("\"", "\\\""), base64Image);
+            """.formatted(textoPrompt.replace("\"", "\\\""), base64Image);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
